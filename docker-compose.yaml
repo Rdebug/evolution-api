@@ -24,7 +24,6 @@ services:
           memory: 300M
         reservations:
           memory: 200M
-    # Desabilitar recursos não essenciais via env
     environment:
       - NODE_OPTIONS=--max-old-space-size=250
 
@@ -63,10 +62,11 @@ services:
     networks:
       - evolution-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-12345678}"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
     deploy:
       resources:
         limits:
@@ -91,6 +91,7 @@ services:
       --thread_stack=128K
       --table_open_cache=200
       --thread_cache_size=8
+      --performance_schema=OFF
 
 volumes:
   evolution_instances:
